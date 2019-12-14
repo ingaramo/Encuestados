@@ -6,20 +6,17 @@ var VistaAdministrador = function(modelo, controlador, elementos) {
   this.controlador = controlador;
   this.elementos = elementos;
   var contexto = this;
-  
+
   // suscripción de observadores
   this.modelo.preguntaAgregada.suscribir(function() {
     contexto.reconstruirLista();
   });
-  this.modelo.preguntaEliminada.suscribir(function() {
-    contexto.reconstruirLista(); 
+  this.modelo.preguntaBorrada.suscribir(function() {
+    contexto.reconstruirLista();
   });
   this.modelo.preguntaEditada.suscribir(function() {
-    contexto.reconstruirLista(); 
+    contexto.reconstruirLista();
   });
-/*  this.modelo.sumarUnVoto1.suscribir(function() {
-    contexto.reconstruirLista(); 
-  });*/
 };
 
 
@@ -27,10 +24,11 @@ VistaAdministrador.prototype = {
   //lista
   inicializar: function() {
     //llamar a los metodos para reconstruir la lista, configurar botones y validar formularios
-    this.modelo.recuperar();
     validacionDeFormulario();
     this.reconstruirLista();
     this.configuracionDeBotones();
+
+
   },
 
   construirElementoPregunta: function(pregunta){
@@ -38,9 +36,7 @@ VistaAdministrador.prototype = {
     var nuevoItem;
     //completar
     //asignar a nuevoitem un elemento li con clase "list-group-item", id "pregunta.id" y texto "pregunta.textoPregunta"
-    let textoPregunta = pregunta.textoPregunta;
-    nuevoItem = $(`<li>${textoPregunta}</li>`).attr({class : 'list-group-item', id: `${pregunta.id}`});
-    
+    nuevoItem = $(`<li>${pregunta.textoPregunta}</li>`).attr({class : 'list-group-item', id: `${pregunta.id}`});
     var interiorItem = $('.d-flex');
     var titulo = interiorItem.find('h5');
     titulo.text(pregunta.textoPregunta);
@@ -48,7 +44,7 @@ VistaAdministrador.prototype = {
       return " " + resp.textoRespuesta;
     }));
     nuevoItem.html($('.d-flex').html());
-    return nuevoItem;
+        return nuevoItem;
   },
 
   reconstruirLista: function() {
@@ -66,31 +62,35 @@ VistaAdministrador.prototype = {
 
     //asociacion de eventos a boton
     e.botonAgregarPregunta.click(function() {
-      var pregunta = e.pregunta.val();
+      var value = e.pregunta.val();
       var respuestas = [];
 
       $('[name="option[]"]').each(function() {
-        //completar
-        let respuesta = $(this).val();
-        respuestas.push({'textoRespuesta': respuesta, 'cantidad': 0 });
-      });
-      debugger
+        let respuesta =  $(this).val();
+        respuestas.push(respuesta);
+      })
       contexto.limpiarFormulario();
-      contexto.controlador.agregarPregunta(pregunta, respuestas);
-    });
-    //asociar el resto de los botones a eventos
+      contexto.controlador.agregarPregunta(value, respuestas);
+    }),
+
     e.botonBorrarPregunta.click(function(){
-      var id = parseInt($('.list-group-item.active').attr('id'));
-      contexto.controlador.borrarPregunta(id);
+      let id = $('.list-group-item.active').attr('id')
+      contexto.controlador.borrarPregunta(id)
     });
-    e.botonEditarPregunta.click(function(){});
+    
     e.borrarTodo.click(function(){
-      contexto.controlador.borrarTodasLasPreguntas();
+      contexto.controlador.borrarTodo();
     });
+    
+    e.botonEditarPregunta.click(function(){
+      let id = $('.list-group-item.active').attr('id')
+      let textoPregunta = $('.list-group-item.active').find('h5').text()
+      e.pregunta.val(textoPregunta )
+      contexto.controlador.editarPregunta(id)
+    })
   },
 
   limpiarFormulario: function(){
     $('.form-group.answer.has-feedback.has-success').remove();
   },
 };
-

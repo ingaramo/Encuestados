@@ -7,51 +7,68 @@ var Controlador = function(modelo) {
 
 Controlador.prototype = {
   agregarPregunta: function(pregunta, respuestas) {
-    for(let i = 0 ; i < respuestas.length ; i++){
-      if(!this.validarRespuesta(respuestas[i])){
-        respuestas.splice(i, 1);
-        
-      }
+      let arrayRespuestas = [];
+      respuestas.forEach(e => {
+        if(this.validarRespuesta(e)){
+          arrayRespuestas.push({'textoRespuesta': e, 'cantidad': 0});
+        }
+      })
+      this.modelo.agregarPregunta(pregunta, arrayRespuestas);
+  },
+  borrarPregunta: function (id){
+    if(!this.validarId){
+    alert ('invalid id')
+    return
     }
-    if(this.validarPregunta(pregunta)){
-      this.modelo.agregarPregunta(pregunta, respuestas);
+    let index = this.obtenerIndexPregunta(id)
+    if (index != -1){
+      this.modelo.borrarPregunta(index)
+    }
+    else {
+      alert('error pregunta no eliminada')
     }
   },
-  borrarPregunta: function(id){
-    if(this.validarId(id)){
-      this.modelo.borrarPregunta(id)
+  borrarTodo: function(){
+      this.modelo.borrarTodo()
+  },
+  editarPregunta: function(id){
+    this.borrarPregunta(id)
+  },
+  validarRespuesta: function(textoRespuesta){
+    if(textoRespuesta != '' && textoRespuesta != null &&textoRespuesta != undefined){
+      return true
     }
-  },
-  agregarRespuesta: function(id, respuesta){
-    if(this.validarId(id) && this.validarRespuesta(respuesta)){
-      this.modelo.agregarRespuesta(id, respuesta);
-    }
-  },
-  borrarTodasLasPreguntas: function(){
-    this.modelo.borrarTodasLasPreguntas();
-  },
-  agregarVoto: function(idPregunta, respuesta){
-    //if (this.validarId(idPregunta) && this.validarRespuesta(respuesta)){
-      this.modelo.sumarUnVoto(idPregunta, respuesta);
-    //}
-  }, 
-  validarPregunta: function(pregunta){
-    if(pregunta === '' || pregunta === null){
+    else {
       return false
     }
-    return true
   },
   validarId: function(id){
-    if( isNaN(id) || id === null || id=== '' || id < 0 ){
+    let preguntas = this.modelo.preguntas
+    if (!isNaN(parseInt(id))&& preguntas.map(e=>e.id).indexOf( parseInt(id)) != -1){
+      return true;
+    }
+    else {
       return false
     }
-    return true
+    
   },
-  validarRespuesta: function (respuesta){
-    if(respuesta.textoRespuesta === null || respuesta.textoRespuesta === ''
-    || isNaN(respuesta.cantidad) || respuesta.cantidad < 0 ) {
-      return false
-    } 
-    return true
+  obtenerIndexPregunta: function(idPregunta){
+    let arrayAux = this.modelo.preguntas.map(function (e){return e.id});
+    let index = arrayAux.indexOf(parseInt(idPregunta));
+    return index
+
+  },
+  //agregarUnVoto(nombrePregunta,respuestaSeleccionada)
+  agregarUnVoto(preguntaId, textoRespuesta){
+    if(this.validarId(preguntaId)){
+      let index = this.obtenerIndexPregunta(preguntaId)
+      if(index!= -1){
+      this.modelo.agregarUnVoto(index, textoRespuesta);        
+      }
+    }else{
+      alert('id pregunta invalido')
+    }
+
   }
+ 
 };

@@ -10,15 +10,20 @@ var VistaUsuario = function(modelo, controlador, elementos) {
   //suscripcion a eventos del modelo
   this.modelo.preguntaAgregada.suscribir(function() {
     contexto.reconstruirLista();
+    contexto.reconstruirGrafico();
+    
   });
-  this.modelo.preguntaEliminada.suscribir(function() {
-    contexto.reconstruirLista(); 
+  this.modelo.preguntaBorrada.suscribir(function() {
+    contexto.reconstruirGrafico();
+    contexto.reconstruirLista();
   });
   this.modelo.preguntaEditada.suscribir(function() {
-    contexto.reconstruirLista(); 
+    contexto.reconstruirGrafico();
+    contexto.reconstruirLista();
   });
-  this.modelo.sumarUnVoto1.suscribir(function() {
-    contexto.reconstruirLista(); 
+  this.modelo.sumarUnVoto.suscribir(function(){
+    contexto.reconstruirGrafico();
+    
   });
 };
 
@@ -40,15 +45,14 @@ VistaUsuario.prototype = {
   reconstruirGrafico: function(){
     var contexto = this;
     //obtiene las preguntas del local storage
-    this.modelo.recuperar();
     var preguntas = this.modelo.preguntas;
-    preguntas.forEach(function(pregunta){
-      var listaParaGrafico = [[pregunta.textoPregunta, 'Cantidad']];
-      var respuestas = pregunta.cantidadPorRespuesta;
-      respuestas.forEach (function(respuesta) {
-        listaParaGrafico.push([respuesta.textoRespuesta,respuesta.cantidad]);
+    preguntas.forEach(function(clave){
+      var listaParaGrafico = [[clave.textoPregunta, 'Cantidad']];
+      var respuestas = clave.cantidadPorRespuesta;
+      respuestas.forEach (function(elemento) {
+        listaParaGrafico.push([elemento.textoRespuesta,elemento.cantidad]);
       });
-      contexto.dibujarGrafico(pregunta.textoPregunta, listaParaGrafico);
+      contexto.dibujarGrafico(clave.textoPregunta, listaParaGrafico);
     })
   },
 
@@ -61,11 +65,8 @@ VistaUsuario.prototype = {
     preguntas.forEach(function(clave){
       //completar
       //agregar a listaPreguntas un elemento div con valor "clave.textoPregunta", texto "clave.textoPregunta", id "clave.id"
-      let elementoDiv = document.createElement('div');
-      let contenido = document.createTextNode(`${clave.textoPregunta}`);
-      elementoDiv.setAttribute('id', clave.id);
-      elementoDiv.appendChild(contenido);
-      listaPreguntas.append(elementoDiv);
+      let newDiv = $(`<div>${clave.textoPregunta}</div>`).attr({ id: `${clave.id}`, value: `${clave.textoPregunta}`});
+      listaPreguntas.append(newDiv);
       var respuestas = clave.cantidadPorRespuesta;
       contexto.mostrarRespuestas(listaPreguntas,respuestas, clave);
     })
@@ -89,11 +90,11 @@ VistaUsuario.prototype = {
   agregarVotos: function(){
     var contexto = this;
     $('#preguntas').find('div').each(function(){
-        //var nombrePregunta = $(this).attr('value');
+        var nombrePregunta = $(this).attr('value');
         var id = $(this).attr('id');
         var respuestaSeleccionada = $('input[name=' + id + ']:checked').val();
         $('input[name=' + id + ']').prop('checked',false);
-        contexto.controlador.agregarVoto(id,respuestaSeleccionada);
+        contexto.controlador.agregarUnVoto(id,respuestaSeleccionada);
       });
   },
 

@@ -1,4 +1,4 @@
-//Evento QUE HACE LA LINEA 13 vistaAdmin.suscribirLista()(modelo)
+//Evento
 var Evento = function(emisor) {
   this.sujeto = emisor;
   this.observadores = [];
