@@ -83,6 +83,7 @@ VistaAdministrador.prototype = {
     });
     
     e.botonEditarPregunta.click(function(){
+      contexto.limpiarFormulario();
       let id = $('.list-group-item.active').attr('id');
       let textoPregunta = $('.list-group-item.active').find('h5').text();
       e.pregunta.val(textoPregunta );
