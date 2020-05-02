@@ -35,10 +35,7 @@ VistaUsuario.prototype = {
     var contexto = this;
     
     elementos.botonAgregar.click(function() {
-      let nombre = $('#nombreUsuario').val()
-      console.log(nombre) 
       contexto.agregarVotos(); 
-      alert( nombre +', gracias por tu voto' )
     });
       
     this.reconstruirGrafico();

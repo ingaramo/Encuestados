@@ -83,31 +83,9 @@ VistaAdministrador.prototype = {
     });
     
     e.botonEditarPregunta.click(function(){
-      contexto.limpiarFormulario();
-      let id = $('.list-group-item.active').attr('id');
-      let textoPregunta = $('.list-group-item.active').find('h5').text();
-      e.pregunta.val(textoPregunta );
-      
-      let stringRespuestas = $('.list-group-item.active').find('small').text()
-      let respuestasArray = stringRespuestas.split(',');
-      
-      
-      for(let i = 0 ; i<respuestasArray.length ; i++){
-        var $template = $('#optionTemplate');
-        let $clone = $template
-        .clone()
-        .removeClass('hide')
-        .attr('id', "respuesta" + this.cantRespuestas)
-        .insertBefore($template),
-        $option = $clone.find('[name="option[]"]');
-        $option.val(respuestasArray[i])
-      }/*
-      for(let j=1 ; respuestasInput.length > j ; j++){
-        if(respuestasInput[j].value==='' && respuestasInput[j].id!='optionTemplate'){
-          respuestasInput[j].parentNode.remove();
-        }
-        console.log(j)
-      }*/
+      let id = $('.list-group-item.active').attr('id')
+      let textoPregunta = $('.list-group-item.active').find('h5').text()
+      e.pregunta.val(textoPregunta )
       contexto.controlador.editarPregunta(id)
     })
   },
